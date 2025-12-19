@@ -5,7 +5,7 @@
 import readline from "node:readline"
 import {spawn} from 'child_process'
 import PROPOSAL_REQUIREMENTS from "./rules.js"
-
+import parseProposal from "./utils/parseProposal.js"
 // console.log('Proposal Rules: ', PROPOSAL_RULES)
 
 console.log('Running agent script.')
@@ -18,13 +18,21 @@ function askCoder(prompt: string) {
     const proc = spawn('ollama',['run', PROPOSAL_MODEL, PROPOSAL_REQUIREMENTS + prompt])
     proc.stdin.end()
 
+    let buffer = ''
     proc.stdout.on('data',(data)=>{
       const chunk = data.toString()
       process.stdout.write(chunk)
+      buffer += chunk
     })
 
     proc.on('close',(code)=>{
-      if(code == 0) res('Success')
+      if(code == 0) {
+        console.log('Closing spawned process.')
+        const parsedProposal = parseProposal(buffer)
+        // console.log('Parsed proposal: ', parsedProposal.title)
+        // process.stdout.write(`Parsed title: ${parsedProposal.title}`)
+        res(parsedProposal)
+      }
       else rej(`Error on close with code: ${code}`)
     })
     proc.on('error', (err) => rej(err))
@@ -48,7 +56,8 @@ async function chat(){
         process.exit(0)
       }
       try {
-        await askCoder(input)        
+        const parsedTitle = await askCoder(input)
+        console.log('Parsed Title: ',parsedTitle )        
       } catch (error) {
         console.log('Error on prompt: ', error)
       }

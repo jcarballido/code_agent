@@ -47,7 +47,8 @@ OUTPUT EXAMPLE:
 
 === PROPOSAL START ===
 
-TITLE: Todo App Skeleton
+TITLE: 
+Todo App Skeleton
 
 DESCRIPTION:
 I plan to create a basic React + TypeScript app with the following components:
