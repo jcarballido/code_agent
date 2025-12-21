@@ -56,8 +56,8 @@ async function chat(){
         process.exit(0)
       }
       try {
-        const parsedTitle = await askCoder(input)
-        console.log('Parsed Title: ',parsedTitle )        
+        const parsedBuffer = await askCoder(input)
+        console.log('Parsed Title: ',parsedBuffer )        
       } catch (error) {
         console.log('Error on prompt: ', error)
       }
