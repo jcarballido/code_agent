@@ -6,8 +6,16 @@ import readline from "node:readline"
 import {spawn} from 'child_process'
 import PROPOSAL_REQUIREMENTS from "./rules.js"
 import parseProposal from "./utils/parseProposal.js"
+import path from "node:path"
 // console.log('Proposal Rules: ', PROPOSAL_RULES)
 
+type ParseProposal = {
+  title:string,
+  description:string,
+  files:string[],
+  constraints: string[],
+  errors:string[]
+}
 console.log('Running agent script.')
 
 const CODE_MODEL = 'coder'
@@ -21,7 +29,7 @@ function askCoder(prompt: string) {
     let buffer = ''
     proc.stdout.on('data',(data)=>{
       const chunk = data.toString()
-      process.stdout.write(chunk)
+      process.stdout.write( chunk)
       buffer += chunk
     })
 
@@ -56,7 +64,15 @@ async function chat(){
         process.exit(0)
       }
       try {
-        const parsedBuffer = await askCoder(input)
+        const parsedBuffer: ParseProposal = await askCoder(input)
+        const isSafePath = (workingDir:string,proposedPath:string): boolean => {
+          if(path.isAbsolute(proposedPath)) return false
+          const resolvedPath = path.resolve(workingDir,proposedPath)
+          return resolvedPath.startsWith(workingDir + path.sep)
+        }
+        const workingPath = '/home/toast/Development/ai_projects/code_agent'
+        const files = parsedBuffer.files
+        if(!isSafePath(workingPath,)) console.log('')
         console.log('Parsed Title: ',parsedBuffer )        
       } catch (error) {
         console.log('Error on prompt: ', error)

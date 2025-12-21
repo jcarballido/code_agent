@@ -54,7 +54,7 @@ export default function parseProposal(buffer:string): ParseProposal{
     while(i < splitBufferByLine.length && currentLine() !== exitHeader ){
       if(currentLine() !== startHeader && currentLine() !== ''){
         const lineData = currentLine()
-        const path = lineData?.match(/^-\s(.*):/) || ''
+        const path = lineData?.match(/^-\s(.*):?/) || ''
         if(isKeyofParsedProposal(startHeaderConverted, parsedProposal)){
           if(startHeaderConverted == 'files' || startHeaderConverted == 'constraints'){
             if(path[1]){
