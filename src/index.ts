@@ -21,7 +21,7 @@ console.log('Running agent script.')
 const CODE_MODEL = 'coder'
 const PROPOSAL_MODEL = 'llama3.1'
 
-function askCoder(prompt: string) {
+function askCoder(prompt: string): Promise<ParseProposal> {
   return new Promise((res, rej) => {
     const proc = spawn('ollama',['run', PROPOSAL_MODEL, PROPOSAL_REQUIREMENTS + prompt])
     proc.stdin.end()
@@ -56,7 +56,14 @@ const rl = readline.createInterface({
 async function chat(){
   console.log('Chat started. Enter "exit" to quit.')
 
+  const isSafePath = (workingDir:string,proposedPath:string): boolean => {
+    if(path.isAbsolute(proposedPath)) return false
+    const resolvedPath = path.resolve(workingDir,proposedPath)
+    return resolvedPath.startsWith(workingDir + path.sep)
+  }
+
   const prompt = () => {
+    const repromptTriggers:string[] = []
     rl.question('Enter a prompt: ', async (input) => {
       if(input == 'exit'){
         console.log('Chat ended.')
@@ -64,16 +71,19 @@ async function chat(){
         process.exit(0)
       }
       try {
-        const parsedBuffer: ParseProposal = await askCoder(input)
-        const isSafePath = (workingDir:string,proposedPath:string): boolean => {
-          if(path.isAbsolute(proposedPath)) return false
-          const resolvedPath = path.resolve(workingDir,proposedPath)
-          return resolvedPath.startsWith(workingDir + path.sep)
-        }
+        const parsedBuffer = await askCoder(input)
+        // Check output paths
         const workingPath = '/home/toast/Development/ai_projects/code_agent'
-        const files = parsedBuffer.files
-        if(!isSafePath(workingPath,)) console.log('')
-        console.log('Parsed Title: ',parsedBuffer )        
+        const filePaths = parsedBuffer.files
+        const checkSafePathResult = filePaths.map( filePath => {
+          return isSafePath(workingPath,filePath)
+        })
+        if(checkSafePathResult.includes(false)) repromptTriggers.push('Paths are not safe.')
+        // Check constraints
+        const { errors } = parsedBuffer
+        repromptTriggers.push(...errors)
+        if (repromptTriggers.length > 0) console.log('Reprompt necesarry for the following reasons: ',repromptTriggers)
+
       } catch (error) {
         console.log('Error on prompt: ', error)
       }
@@ -85,3 +95,8 @@ async function chat(){
 }
 
 chat()
+
+// - All code must be TypeScript React (TSX)
+// - No styling or CSS frameworks included
+// - Each file must be independent and compile without errors
+// - All files must be placed under src/
