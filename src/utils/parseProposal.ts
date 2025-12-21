@@ -66,7 +66,7 @@ export default function parseProposal(buffer:string): ParseProposal{
       i++
     }
     if(isKeyofParsedProposal(startHeaderConverted,parsedProposal)){
-      if(startHeaderConverted == 'files' || startHeaderConverted == 'constraints'){
+      if(startHeaderConverted == 'files'){
         if(parsedProposal[startHeaderConverted].length == 0) parsedProposal.errors.push(`Missing ${startHeaderConverted} data.`)
       }
     }
@@ -93,7 +93,6 @@ export default function parseProposal(buffer:string): ParseProposal{
   if(i > splitBufferByLine.length) parsedProposal.errors.push("Missing === PROPOSAL END ===")
   
   return parsedProposal
-
 }
 
 

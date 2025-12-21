@@ -63,8 +63,9 @@ async function chat(){
   }
 
   const prompt = () => {
-    const repromptTriggers:string[] = []
     rl.question('Enter a prompt: ', async (input) => {
+      const repromptTriggers:string[] = []
+      let repromptRetries = 0
       if(input == 'exit'){
         console.log('Chat ended.')
         rl.close()
@@ -82,7 +83,14 @@ async function chat(){
         // Check constraints
         const { errors } = parsedBuffer
         repromptTriggers.push(...errors)
-        if (repromptTriggers.length > 0) console.log('Reprompt necesarry for the following reasons: ',repromptTriggers)
+        if(parsedBuffer.constraints.length == 0) {
+          console.log('CONSTRAINTS were not provided in the proposal. Check the rules include them. Chat ended')
+          rl.close()
+          process.exit(0)
+        }
+        if (repromptTriggers.length > 0) {
+          console.log('Reprompt necesarry for the following reasons: ',repromptTriggers)
+        }  
 
       } catch (error) {
         console.log('Error on prompt: ', error)
@@ -95,8 +103,3 @@ async function chat(){
 }
 
 chat()
-
-// - All code must be TypeScript React (TSX)
-// - No styling or CSS frameworks included
-// - Each file must be independent and compile without errors
-// - All files must be placed under src/
