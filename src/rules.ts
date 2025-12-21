@@ -24,6 +24,9 @@ FILES:
 (Include all files the task will create or modify)
 
 CONSTRAINTS:
+- All code must be TypeScript React (TSX)
+- No styling or CSS frameworks included
+- Each file must be independent and compile without errors
 
 
 3. No extra commentary, code, or explanations are allowed outside these sections.

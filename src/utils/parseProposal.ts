@@ -10,7 +10,6 @@ function isKeyofParsedProposal(key:string, typedObject: ParseProposal): key is k
   return key in typedObject
 }
 
-
 export default function parseProposal(buffer:string): ParseProposal{
   const parsedProposal: ParseProposal = {
     title:'',
@@ -50,45 +49,6 @@ export default function parseProposal(buffer:string): ParseProposal{
       }
     }
   }
-
-  while(i < splitBufferByLine.length && currentLine() !== '=== PROPOSAL START ==='){
-    i++
-  }
-  if(i == splitBufferByLine.length){
-    // throw new Error('Missing === PROPOSAL START ===')
-    parsedProposal.errors.push('Missing === PROPOSAL START ====')
-  }
-
-  i++
-
-  if(currentLine() !== 'TITLE:' && currentLine() !== ''){
-    parsedProposal.errors.push('Missing TITLE header.')
-  }
-  i++
-//
-  singleStringContentExtraction('TITLE:','DESCRIPTION:')
-  // let titleLines = [] 
-  // while(i < splitBufferByLine.length && currentLine() !== 'DESCRIPTION:'){
-  //   if(currentLine() !== 'TITLE:'){ 
-  //     titleLines.push(currentLine())
-  //   }
-  //   i++
-  // }
-  // const titleJoined = titleLines.join(' ').trim()
-  // if(titleJoined == '') parsedProposal.errors.push('Missing title data')
-
-  // parsedProposal.title = titleJoined
-//
-  singleStringContentExtraction('DESCRIPTION:','FILES:')
-  // let descriptionLines = []
-  // while(i < splitBufferByLine.length && currentLine() !== 'FILES:' ){
-  //   if(currentLine() !== 'DESCRIPTION:') descriptionLines.push(currentLine())
-  //   i++
-  // }
-  // const descriptionJoined = descriptionLines.join(' ').trim()
-  // if(descriptionJoined == '') parsedProposal.errors.push('Missing title data')
-  // parsedProposal.description = descriptionJoined
-//
   const arrayContentExtraction = (startHeader:string, exitHeader:string) => {
     const startHeaderConverted = startHeader.toLowerCase().replace(':','')
     while(i < splitBufferByLine.length && currentLine() !== exitHeader ){
@@ -113,41 +73,29 @@ export default function parseProposal(buffer:string): ParseProposal{
     if(parsedProposal.files.length == 0) parsedProposal.errors.push('Missing file path data')
   }
 
+  while(i < splitBufferByLine.length && currentLine() !== '=== PROPOSAL START ==='){
+    i++
+  }
+  if(i == splitBufferByLine.length){
+    // throw new Error('Missing === PROPOSAL START ===')
+    parsedProposal.errors.push('Missing === PROPOSAL START ====')
+  }
+  i++
+  if(currentLine() !== 'TITLE:' && currentLine() !== ''){
+    parsedProposal.errors.push('Missing TITLE header.')
+  }
+  i++
+  singleStringContentExtraction('TITLE:','DESCRIPTION:')
+  singleStringContentExtraction('DESCRIPTION:','FILES:')
   arrayContentExtraction('FILES:','CONSTRAINTS:')
-  // while(i < splitBufferByLine.length && currentLine() !== 'CONSTRAINTS:' ){
-  //   if(currentLine() !== 'FILES:' && currentLine() !== ''){
-  //     const fileData = currentLine()
-  //     console.log('File data: ',fileData)
-  //     const path = fileData?.match(/^-\s(.*):/) || ''
-  //     console.log('path data: ', path)
-  //     parsedProposal.files.push(path[1] || '') 
-  //   }
-  //   i++
-  // }
-  // if(parsedProposal.files.length == 0) parsedProposal.errors.push('Missing file path data')
   arrayContentExtraction('CONSTRAINTS:','=== PROPOSAL END ===')
-  // while(i < splitBufferByLine.length && currentLine() !== '=== PROPOSAL END ==='){
-  //   if(currentLine() !== 'CONSTRAINTS:' && currentLine() !== '') {
-  //     const constraintData = currentLine()
-  //     console.log('Constraint: ', constraintData)
-  //     const constraintLine = constraintData?.match(/^-\s(.*)/) || ''
-  //     console.log('Captured constraint: ',constraintLine)
-  //     parsedProposal.constraints.push(constraintLine[1] || '')
-  //   }
-  //   i++
-  // }
-  // if(parsedProposal.constraints.length == 0) parsedProposal.errors.push('Missing constraints')
 
   if(i > splitBufferByLine.length) parsedProposal.errors.push("Missing === PROPOSAL END ===")
   
   return parsedProposal
 
-  
 }
 
-// - All code must be TypeScript React (TSX)
-// - No styling or CSS frameworks included
-// - Each file must be independent and compile without errors
 
 
 
