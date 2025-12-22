@@ -58,7 +58,7 @@ export default function parseProposal(buffer:string): ParseProposal{
         if(isKeyofParsedProposal(startHeaderConverted, parsedProposal)){
           if(startHeaderConverted == 'files' || startHeaderConverted == 'constraints'){
             if(path[1]){
-              parsedProposal[startHeaderConverted].push(path[1] || '') 
+              parsedProposal[startHeaderConverted].push(path[1]) 
             }
           }
         }

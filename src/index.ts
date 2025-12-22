@@ -1,6 +1,7 @@
 import readline from "node:readline"
 import askCoder from "./utils/askCoder.js"
-import isSafePath from "./utils/isSafePath.js"
+import validateFilePaths from "./validateFilePaths.js"
+import validateConstraints from "./validateConstraints.js"
 
 console.log('Chat started. Enter "exit" to quit.')
 
@@ -23,21 +24,21 @@ async function chat(){
     
     try {
       const parsedBuffer = await askCoder(input)
-      // Check output paths
-      const workingPath = '/home/toast/Development/ai_projects/code_agent'
-      const filePaths = parsedBuffer.files
-      const checkSafePathResult = filePaths.map( filePath => {
-        return isSafePath(workingPath,filePath)
-      })
-      if(checkSafePathResult.includes(false)) repromptTriggers.push('Paths are not safe.')
-      // Check constraints
-      const { errors } = parsedBuffer
-      repromptTriggers.push(...errors)
-      if(parsedBuffer.constraints.length == 0) {
+      const areFilePathsValid = validateFilePaths(parsedBuffer.files)
+      if(areFilePathsValid) repromptTriggers.push('Paths are not safe.')
+
+      const areConstraintsValid = validateConstraints(parsedBuffer.constraints)
+      if(!areConstraintsValid) {
         console.log('CONSTRAINTS were not provided in the proposal. Check the rules include them. Chat ended')
         rl.close()
         process.exit(0)
       }
+
+      const { errors } = parsedBuffer
+      repromptTriggers.push(...errors)
+      // Check constraints
+      if(areConstraintsValid) console.log('CONSTRAINTS were not provided in the proposal. Check the rules include them. Chat ended')
+
       if (repromptTriggers.length > 0) {
         console.log('Reprompt necesarry for the following reasons: ',repromptTriggers)
       }  
@@ -49,3 +50,11 @@ async function chat(){
 }
 
 chat()
+
+//script starts...
+// Prompt is requested.
+// Proposal is generated
+// Proposal is validated
+// Proposal is accepted or rejected
+// If rejected, proposal is re prompted with reasons for rejection provided
+// 
