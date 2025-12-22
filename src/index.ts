@@ -1,10 +1,6 @@
 import readline from "node:readline"
-import {spawn} from 'child_process'
-import PROPOSAL_REQUIREMENTS from "./rules.js"
-import parseProposal from "./utils/parseProposal.js"
-import path from "node:path"
-import type { ParseProposal } from "./types.js"
 import askCoder from "./utils/askCoder.js"
+import isSafePath from "./utils/isSafePath.js"
 
 console.log('Running agent script.')
 
@@ -41,11 +37,11 @@ const rl = readline.createInterface({
 async function chat(){
   console.log('Chat started. Enter "exit" to quit.')
 
-  const isSafePath = (workingDir:string,proposedPath:string): boolean => {
-    if(path.isAbsolute(proposedPath)) return false
-    const resolvedPath = path.resolve(workingDir,proposedPath)
-    return resolvedPath.startsWith(workingDir + path.sep)
-  }
+  // const isSafePath = (workingDir:string,proposedPath:string): boolean => {
+  //   if(path.isAbsolute(proposedPath)) return false
+  //   const resolvedPath = path.resolve(workingDir,proposedPath)
+  //   return resolvedPath.startsWith(workingDir + path.sep)
+  // }
 
   const prompt = () => {
     rl.question('Enter a prompt: ', async (input) => {
