@@ -1,14 +1,15 @@
 import isSafePath from "./utils/isSafePath.js"
+import type { ValidationResult } from "./types.js"
 
-const validateFilePaths = (filePaths:string[]):{result:string, error:string} => {
+const validateFilePaths = (filePaths:string[]):ValidationResult => {
   const ROOT = process.cwd()
   const checkSafePathResult = filePaths.map( filePath => {
     return isSafePath(ROOT,filePath)
   })
   if(checkSafePathResult.includes(false)){
-    return {result:'', error:'File paths are not safe.'}
+    return {result:'failed', error:'File paths are not safe.'}
   }
-  return {result:'File paths are safe.', error:''}
+  return {result:'passed', msg:'File paths are safe.' }
 }
 
 export default validateFilePaths

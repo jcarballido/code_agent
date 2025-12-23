@@ -14,7 +14,6 @@ async function chat(){
 
   // Initiate prompt
   rl.question('Enter a prompt: ', async (input) => {
-    const repromptTriggers:string[] = []
     let promptRetries = 0
     let isPromptApproved = false
     const rejectionCause:{files:string[], constraints:string[]} = {
@@ -28,7 +27,7 @@ async function chat(){
       process.exit(0)
     }
     
-    while(promptRetries < 3 && !isPromptApproved){
+    while(promptRetries < 1 && !isPromptApproved){
       try {
         let updatedPrompt = input
         if(rejectionCause.files.length > 0){
@@ -43,32 +42,42 @@ async function chat(){
         // If validation fails, increment promptRetries
         
         const areFilePathsValid = validateFilePaths(parsedProposal.files)
-        if(areFilePathsValid.error !== ''){
-          if(rejectionCause.files.length == 0) rejectionCause.files.push('Proposed file paths were outside of the user-specified working directory.')
+        if(areFilePathsValid.result == 'failed'){
+          console.log('File paths failed.')
+          if(rejectionCause.files.length == 0) rejectionCause.files.push(areFilePathsValid.error)
         }else{
+                console.log('File paths passed.')
+
           rejectionCause.files = []
         }
 
         const areConstraintsValid = validateConstraints(parsedProposal.constraints)
         
-        const { errors } = parsedProposal
-        repromptTriggers.push(...errors)
-        // Check constraints
-        if(areConstraintsValid) console.log('CONSTRAINTS were not provided in the proposal. Check the rules include them. Chat ended')
-          
-          if (repromptTriggers.length > 0) {
-            console.log('Reprompt necesarry for the following reasons: ',repromptTriggers)
-          }  
-          
-        } catch (error) {
-          console.log('Error on prompt: ', error)
-          if(!areConstraintsValid) {
-            console.log('CONSTRAINTS were not provided in the proposal. Check the rules include them. Chat ended')
-            rl.close()
-            process.exit(0)
-          }
+        if(areConstraintsValid.result == 'failed'){
+          console.log('Contraints failed')
+          if(rejectionCause.constraints.length == 0) rejectionCause.constraints.push(areConstraintsValid.error)
+        } else{
+          console.log('Constraints passed')
+          rejectionCause.constraints = []
         }
+
+        if(areConstraintsValid.result == 'passed' && areFilePathsValid.result == 'passed'){
+          console.log('Proposal approved: ', parsedProposal)
+          isPromptApproved = true
+          rl.close()
+          process.exit(0)
+        }
+        promptRetries++ 
+                rl.close()
+        process.exit(0)
+      } catch (error) {
+        console.log('Error on prompt: ', error)
+        rl.close()
+        process.exit(0)
+      }
     }
+
+
   })
 
 }

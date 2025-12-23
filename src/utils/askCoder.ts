@@ -1,5 +1,5 @@
 import { CODE_MODEL, PROPOSAL_MODEL } from "../constants.js"
-import PROPOSAL_REQUIREMENTS from "./parseProposal.js"
+import PROPOSAL_REQUIREMENTS from "../rules.js"
 import type { ParseProposal } from "../types.js"
 import {spawn} from "node:child_process"
 import parseProposal from "./parseProposal.js"

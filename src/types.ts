@@ -5,3 +5,7 @@ export type ParseProposal = {
   constraints: string[],
   errors:string[]
 }
+
+export type ValidationResult = 
+  | {result: 'passed', msg:string}
+  | {result:'failed', error: string }
