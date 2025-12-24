@@ -29,7 +29,7 @@ async function chat(){
     
     while(promptRetries < 1 && !isPromptApproved){
       try {
-        let updatedPrompt = input
+        let updatedPrompt = 'Create a react component that lists 3 items.'
         if(rejectionCause.files.length > 0){
           updatedPrompt += ''
           if(rejectionCause.constraints.length > 0){
@@ -46,8 +46,7 @@ async function chat(){
           console.log('File paths failed.')
           if(rejectionCause.files.length == 0) rejectionCause.files.push(areFilePathsValid.error)
         }else{
-                console.log('File paths passed.')
-
+          console.log('File paths passed.')
           rejectionCause.files = []
         }
 
@@ -68,7 +67,7 @@ async function chat(){
           process.exit(0)
         }
         promptRetries++ 
-                rl.close()
+        rl.close()
         process.exit(0)
       } catch (error) {
         console.log('Error on prompt: ', error)
