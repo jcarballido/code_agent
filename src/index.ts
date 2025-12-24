@@ -3,6 +3,7 @@ import askCoder from "./utils/askCoder.js"
 import validateFilePaths from "./validateFilePaths.js"
 import validateConstraints from "./validateConstraints.js"
 import { constraints } from "./rules.js"
+import parseProposal from "./utils/parseProposal.js"
 
 console.log('Chat started. Enter "exit" to quit.')
 
@@ -81,4 +82,42 @@ async function chat(){
 
 }
 
-chat()
+// chat()
+
+const testString = `
+=== PROPOSAL START ===
+
+TITLE: 
+Todo App Skeleton
+
+DESCRIPTION:
+I plan to create a basic React + TypeScript app with the following components:
+- App.tsx: main app container
+- TodoList.tsx: displays todos
+- TodoItem.tsx: single todo item
+This plan only includes skeleton code; no styling yet.
+
+FILES:
+- src/App.tsx: main app container
+- src/TodoList.tsx: displays list of todos
+- src/TodoItem.tsx: renders individual todo
+
+CONSTRAINTS:
+- All code must be TypeScript React (TSX)
+- No styling or CSS frameworks included
+- Each file must be independent and compile without errors
+- All files must be placed under src/
+
+=== PROPOSAL END ===
+`
+
+const parsed = parseProposal(testString)
+
+const areFilePathsValid = validateFilePaths(parsed.files)
+if(areFilePathsValid.result == 'failed'){
+  console.log('File paths failed.')
+  // if(rejectionCause.files.length == 0) rejectionCause.files.push(areFilePathsValid.error)
+}else{
+  console.log('File paths passed.')
+  // rejectionCause.files = []
+}

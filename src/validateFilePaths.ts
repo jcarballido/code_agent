@@ -4,6 +4,8 @@ import type { ValidationResult } from "./types.js"
 const validateFilePaths = (filePaths:string[]):ValidationResult => {
   const ROOT = process.cwd()
   const checkSafePathResult = filePaths.map( filePath => {
+    console.log('Root:',ROOT)
+    console.log(filePath)
     return isSafePath(ROOT,filePath)
   })
   if(checkSafePathResult.includes(false)){
