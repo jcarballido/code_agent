@@ -15,7 +15,7 @@ async function chat(){
   // Initiate prompt
   rl.question('Enter a prompt: ', async (input) => {
     let promptRetries = 0
-    let isPromptApproved = false
+    let isPromptValidated = false
     const rejectionCause:{files:string[], constraints:string[]} = {
       files:[],
       constraints:[]
@@ -27,7 +27,7 @@ async function chat(){
       process.exit(0)
     }
     
-    while(promptRetries < 3 && !isPromptApproved){
+    while(promptRetries < 3 && !isPromptValidated){
       try {
         let updatedPrompt: string = ''
         if(rejectionCause.constraints.length > 0 || rejectionCause.files.length > 0){
@@ -51,9 +51,17 @@ async function chat(){
         const validationResult = await requestProposal(updatedPrompt,rejectionCause)
 
         if(rejectionCause.files.length == 0 && rejectionCause.constraints.length == 0){
-          console.log('Proposal approved: ', validationResult)
-          isPromptApproved = true
-          rl.close()
+          console.log('Valid Porposal: ', validationResult)
+          // Show the proposal
+          // Ask for approval or rejection
+          rl.question('Do you approve this proposal? Agent will then generate code for the specified files. \n [y,n]', async (input) => {
+            if(input == 'yes' || input == 'y' || input == 'Yes' || input == 'Y'){
+              console.log('Proposal has been accepted.')
+              isPromptValidated = true
+            }
+          })
+          // If approval, break out of loop.
+          // If rejected, continue with retrying the prompt
         }
         promptRetries++ 
 
@@ -63,6 +71,10 @@ async function chat(){
         process.exit(0)
       }
     }
+
+    console.log('Agent completed attempting to run task generation. Goodbye!')
+    rl.close()
+    process.exit(0)
 
 
   })

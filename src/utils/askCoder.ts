@@ -12,7 +12,7 @@ export default function askCoder(prompt: string): Promise<ParseProposal> {
     let buffer = ''
     proc.stdout.on('data',(data)=>{
       const chunk = data.toString()
-      process.stdout.write( chunk)
+      // process.stdout.write( chunk)
       buffer += chunk
     })
 
