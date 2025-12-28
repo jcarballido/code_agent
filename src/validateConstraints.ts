@@ -1,4 +1,4 @@
-import { constraints } from "./rules.js"
+import { constraints } from "./plannerRules.js"
 import type { ValidationResult } from "./types.js"
 
 const validateConstraints = (parsedConstraints: string[]):ValidationResult => {
