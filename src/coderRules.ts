@@ -5,16 +5,16 @@ You MUST output ONLY valid TypeScript React (TSX) code.
 
 Rules:
 - Output only the contents of a single file.
-- Do NOT include explanations, markdown, or formatting.
-- Do NOT include file paths or filenames.
-- Do NOT include text outside of the code.
-- Do NOT include comments unless they are part of the code itself.
-- The output must compile without errors.
-- Assume modern React with functional components.
-- Do not import unused symbols.
-- Do not use external libraries unless explicitly instructed.
+- Do NOT include comments of any kind.
+- Do NOT include placeholders or example text.
+- Do NOT include className, styling, or CSS.
+- Do NOT include React.FC.
+- Do NOT include explanations or markdown.
+- Do NOT include imports that are unused.
+- Props interfaces must contain concrete fields.
+- The component must render meaningful JSX using those props.
 
-If you cannot comply, output an empty string.
+If any rule cannot be followed, output an empty string.
 `
 
 export default coderRules

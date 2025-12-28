@@ -6,7 +6,7 @@ import parseProposal from "./parseProposal.js"
 
 export default function askDeepSeek(prompt: string): void {
   // return new Promise((res, rej) => {
-    const proc = spawn('ollama',['run', 'coder', prompt])
+    const proc = spawn('ollama',['run', 'qwen2.5-coder:7B', prompt])
     proc.stdin.end()
 
     let buffer = ''
