@@ -6,6 +6,8 @@ import type { ParseProposal } from "./types.js"
 import generateCode from "./utils/generateCode.js"
 import dynamicInput, { type DynamicField } from "./dynamicInput.js"
 import askCoder from "./utils/askCoder.js"
+import fs from 'node:fs'
+import path from "node:path"
 
 console.log('Chat started. Enter "exit" to quit.')
 
@@ -50,10 +52,39 @@ async function chat(){
   console.log('---start---')
   console.log(coderOutput)
   console.log('---end---')
+
+  const outputSplit = coderOutput.split('\n')
+  let start = 0
+  let last = outputSplit.length - 1
+
+  while(start < last && outputSplit[start]?.trim() == '') start++
+  while(last > start && outputSplit[last]?.trim() == '') last--
+
+  console.log('Start element: ',outputSplit[start])
+  console.log('Last element: ',outputSplit[last])
+
+  if(outputSplit[start]?.trim().startsWith(`\`\`\``)){
+    start++
+    if(outputSplit[last]?.trim().startsWith(`\`\`\``)){
+      last--
+    }
+  }
+
+  const trimmedOutput = outputSplit.slice(start,last+1).join('\n')
+
+  console.log('Trimmed output:')
+  console.log('---start---')
+  console.log(trimmedOutput)
+  console.log('---end---')
+  console.log('Current working dir: ', process.cwd())
   
   const approval = await prompt(rl,'Do you want to write this output? [y/n] \n')
   if(approval == 'y' || approval == 'Y' || approval == 'Yes' || approval == 'yes'){
-    
+    const filePath = path.resolve(
+      process.cwd(),
+      'src/ImageComponent.ts'
+    )
+    fs.writeFileSync(filePath, trimmedOutput, 'utf-8')
   }
 
 
