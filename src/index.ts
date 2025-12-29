@@ -23,7 +23,9 @@ async function chat(){
   let approvedComponentName:string = ''
   let approvedCode:string = ''
   let approvedInstructionProposal:string = ''
-  while(!instructionApproved){
+  let instructionAttempts = 0
+  let codeGeneratingAttempts = 0
+  while(!instructionApproved && instructionAttempts < 3){
     const instructionPrompt = await prompt(rl,'What do you want built?\n')
     
     const instructionProposal = await generateProposal(instructionPrompt)
@@ -41,10 +43,18 @@ async function chat(){
       approvedComponentName = componentName
       approvedInstructionProposal = instructionProposal
       instructionApproved = true
+    }else{
+      instructionAttempts++
+      if(instructionAttempts == 3){
+        console.log("Instruction proposal attempts exceeded limit. Agent existing process. Goodbye!")
+        rl.close()
+        return
+      }
     }
   }
 
-  while(!codeApproved){
+
+  while(!codeApproved && instructionApproved && codeGeneratingAttempts < 3){
     const coderOutput = await askCoder(approvedInstructionProposal)
     console.log('---start---')
     console.log(coderOutput)
@@ -53,6 +63,13 @@ async function chat(){
     if(approval == 'y'){
       approvedCode = coderOutput
       codeApproved = true
+    }else{
+      codeGeneratingAttempts++
+      if(codeGeneratingAttempts == 3){
+        console.log("Instruction proposal attempts exceeded limit. Agent existing process. Goodbye!")
+        rl.close()
+        return
+      }
     }
   }
   
