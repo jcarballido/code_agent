@@ -20,8 +20,22 @@ export default function askCoder(prompt: string): Promise<string> {
     proc.on('close',(code)=>{
       if(code == 0) {
         console.log('Closing spawned process.')
-        // const parsedProposal = parseProposal(buffer)
-        res(buffer)
+        console.log('Coder model output the following:')
+        const outputSplit = buffer.split('\n')
+        let start = 0
+        let last = outputSplit.length - 1
+      
+        while(start < last && outputSplit[start]?.trim() == '') start++
+        while(last > start && outputSplit[last]?.trim() == '') last--
+        
+        if(outputSplit[start]?.trim().startsWith(`\`\`\``)){
+          start++
+          if(outputSplit[last]?.trim().startsWith(`\`\`\``)){
+            last--
+          }
+        }
+        const trimmedOutput = outputSplit.slice(start,last+1).join('\n')
+        res(trimmedOutput)
       }
       else rej(`Error on close with code: ${code}`)
     })
