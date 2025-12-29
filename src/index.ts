@@ -5,6 +5,7 @@ import generateProposal from "./utils/generateProposal.js"
 import type { ParseProposal } from "./types.js"
 import generateCode from "./utils/generateCode.js"
 import dynamicInput, { type DynamicField } from "./dynamicInput.js"
+import askCoder from "./utils/askCoder.js"
 
 console.log('Chat started. Enter "exit" to quit.')
 
@@ -41,7 +42,21 @@ async function chat(){
     props:propsSplit
   }) 
 
-  console.log('Captured Input: ',capturedInput)
+  // console.log('Captured Input: ',capturedInput)
+
+  const coderOutput = await askCoder(capturedInput)
+
+  console.log('Coder model output the following:')
+  console.log('---start---')
+  console.log(coderOutput)
+  console.log('---end---')
+  
+  const approval = await prompt(rl,'Do you want to write this output? [y/n] \n')
+  if(approval == 'y' || approval == 'Y' || approval == 'Yes' || approval == 'yes'){
+    
+  }
+
+
   rl.close()
   console.log('Agent exiting process. Goodbye!')
 }

@@ -3,10 +3,11 @@ import PROPOSAL_REQUIREMENTS from "../plannerRules.js"
 import type { ParseProposal } from "../types.js"
 import {spawn} from "node:child_process"
 import parseProposal from "./parseProposal.js"
+import CODER_RULES from '../coderRules.js'
 
-export default function askCoder(prompt: string): Promise<ParseProposal> {
+export default function askCoder(prompt: string): Promise<string> {
   return new Promise((res, rej) => {
-    const proc = spawn('ollama',['run', PROPOSAL_MODEL, PROPOSAL_REQUIREMENTS + prompt])
+    const proc = spawn('ollama',['run', CODE_MODEL, CODER_RULES + prompt])
     proc.stdin.end()
 
     let buffer = ''
@@ -19,8 +20,8 @@ export default function askCoder(prompt: string): Promise<ParseProposal> {
     proc.on('close',(code)=>{
       if(code == 0) {
         console.log('Closing spawned process.')
-        const parsedProposal = parseProposal(buffer)
-        res(parsedProposal)
+        // const parsedProposal = parseProposal(buffer)
+        res(buffer)
       }
       else rej(`Error on close with code: ${code}`)
     })
