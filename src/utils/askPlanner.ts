@@ -8,7 +8,7 @@ import CODER_RULES from '../coderRules.js'
 export default function askPlanner
 (prompt: string): Promise<string> {
   return new Promise((res, rej) => {
-    const proc = spawn('ollama',['run', PROPOSAL_MODEL, PLANNER_RULES + prompt])
+    const proc = spawn('ollama',['run', PROPOSAL_MODEL, prompt])
     proc.stdin.end()
 
     let buffer = ''
@@ -20,7 +20,6 @@ export default function askPlanner
 
     proc.on('close',(code)=>{
       if(code == 0) {
-        console.log('Closing spawned process.')
         // const parsedProposal = parseProposal(buffer)
         res(buffer)
       }
