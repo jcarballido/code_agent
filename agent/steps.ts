@@ -3,6 +3,7 @@ export type AgentStep =
   | "GENERATE_SPEC"
   | "REVIEW_SPEC"
   | "GENERATE_CODE"
+  | "VALIDATE_CODE"
   | "REVIEW_CODE"
   | "WRITE_FILE"
   | "DONE"

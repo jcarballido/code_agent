@@ -6,7 +6,7 @@ import {
   reviewCode,
   writeFile,
 } from "./stepsHandler"
-
+import { validateCode } from "./validateCode"
 
 export async function runStep(
   state: AgentState
@@ -14,12 +14,15 @@ export async function runStep(
   switch (state.step) {
     case "GENERATE_SPEC":
       return await generateSpec(state)
-
+    
     case "REVIEW_SPEC":
       return await reviewSpec(state)
-
+        
     case "GENERATE_CODE":
       return await generateCode(state)
+          
+    case "VALIDATE_CODE":
+      return await validateCode(state)
 
     case "REVIEW_CODE":
       return await reviewCode(state)
