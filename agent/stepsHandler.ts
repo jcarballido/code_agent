@@ -5,6 +5,7 @@ import { checkpoint, restore } from "./mcp"
 import askCoder from '../src/utils/askCoder'
 import path from "path"
 import fs from 'fs'
+import normalizeCode from "./normalizeCode"
 
 function ask(question: string): Promise<string> {
   const rl = readline.createInterface({
@@ -137,6 +138,7 @@ export async function generateCode(
     Use readable typography defaults.
     Favor composition over minimalism.
     If prop requirements are underspecified, infer reasonable types and structure.
+    Do NOT create your own custom classes
 
     Generate a React + TypeScript component.
     - Use TailwindCSS
@@ -149,6 +151,8 @@ export async function generateCode(
 
   try {
     code = await askCoder(prompt)
+    const normalizedCode = normalizeCode(code)
+    code = normalizedCode
   } catch {
     return {
       ...state,
@@ -216,16 +220,18 @@ export async function writeFile(
     console.log("--- NEW ---")
     console.log(state.generatedCode)
 
-    const proceed = await new Promise<string>((resolve) => {
-      const rl = require("readline").createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      })
-      rl.question("Overwrite file? (y = yes / n = skip): ", (answer:string) => {
-        rl.close()
-        resolve(answer.trim())
-      })
-    })
+    // const proceed = await new Promise<string>((resolve) => {
+    //   const rl = require("readline").createInterface({
+    //     input: process.stdin,
+    //     output: process.stdout,
+    //   })
+    //   rl.question("Overwrite file? (y = yes / n = skip): ", (answer:string) => {
+    //     rl.close()
+    //     resolve(answer.trim())
+    //   })
+    // })
+
+    const proceed = await ask('Overwrite file? (y = yes / n = skip): ')
 
     if (proceed.toLowerCase() !== "y") {
       console.log("Skipping file write.")
