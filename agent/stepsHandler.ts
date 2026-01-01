@@ -6,6 +6,7 @@ import askCoder from '../src/utils/askCoder'
 import path from "path"
 import fs from 'fs'
 import normalizeCode from "./normalizeCode"
+import isValid from "./isValid"
 
 function ask(question: string): Promise<string> {
   const rl = readline.createInterface({
@@ -167,6 +168,48 @@ export async function generateCode(
     step: "REVIEW_CODE",
   }
 }
+
+export async function validateCode(state: AgentState): Promise<AgentState>{
+
+  console.log("→ VALIDATE_CODE")
+  
+  if(!state.generatedCode || !state.componentSpec) throw new Error("No code to validate.")
+  if(state.validationAttempts > 3){
+    return {
+      ...state,
+      step: "REVIEW_CODE"
+    }
+  }
+  const cleanedCode = normalizeCode(state.generatedCode)  
+
+  if(isValid(cleanedCode,state.componentSpec.name)){
+    return {
+      ...state,
+      generatedCode: cleanedCode,
+      step:'REVIEW_CODE'
+    }
+  }
+  
+  const errors: string[] = []
+  if(!cleanedCode.includes('export')) errors.push('Missing export statement')
+  if(!cleanedCode.includes(state.componentSpec.name)) errors.push('Component name changed or is missing.')
+  if(cleanedCode.includes('```')) errors.push('Code was fenced in by ```')
+
+  
+  return {
+    ...state,
+    validationAttempts:state.validationAttempts + 1,
+    validationHistory:[
+      ...state.validationHistory,
+      {
+        attempt:state.validationAttempts + 1,
+        errors
+      }
+    ],
+    step:"FIX_CODE"
+  }
+}
+  
 
 export async function reviewCode(
   state: AgentState

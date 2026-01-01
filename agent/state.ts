@@ -27,4 +27,11 @@ export type AgentState = {
   // Control
   step: AgentStep
   errors: string[]
+
+  // Validation
+  validationAttempts: number
+  validationHistory: {
+    attempt:number,
+    errors: string[]
+  }[]
 }

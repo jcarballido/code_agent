@@ -9,5 +9,7 @@ export function initAgentState(description: string): AgentState {
     codeApproved: false,
     step: "GENERATE_SPEC",
     errors: [],
+    validationAttempts:0,
+    validationHistory:[]
   }
 }
