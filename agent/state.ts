@@ -1,5 +1,10 @@
 import { AgentStep } from "./steps"
 
+type ExitReason = 
+  | "VALIDATION_PASSED"
+  | "VALIDATION_RETRIES_EXHAUSTED"
+  | "FIX_CODE_FAILED"
+
 export type ComponentSpec = {
   name: string
   props: Array<{
@@ -34,4 +39,7 @@ export type AgentState = {
     attempt:number,
     errors: string[]
   }[]
+
+  //Validation and Fix_Code Node exit
+  exitReason?: ExitReason
 }

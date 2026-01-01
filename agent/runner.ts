@@ -6,6 +6,7 @@ import {
   validateCode,  
   reviewCode,
   writeFile,
+  fixCode,
 } from "./stepsHandler"
 
 export async function runStep(
@@ -23,6 +24,9 @@ export async function runStep(
           
     case "VALIDATE_CODE":
       return await validateCode(state)
+
+    case "FIX_CODE":
+      return await fixCode(state)
 
     case "REVIEW_CODE":
       return await reviewCode(state)

@@ -177,7 +177,8 @@ export async function validateCode(state: AgentState): Promise<AgentState>{
   if(state.validationAttempts > 3){
     return {
       ...state,
-      step: "REVIEW_CODE"
+      step: "REVIEW_CODE",
+      exitReason:'VALIDATION_RETRIES_EXHAUSTED'
     }
   }
   const cleanedCode = normalizeCode(state.generatedCode)  
@@ -186,7 +187,8 @@ export async function validateCode(state: AgentState): Promise<AgentState>{
     return {
       ...state,
       generatedCode: cleanedCode,
-      step:'REVIEW_CODE'
+      step:'REVIEW_CODE',
+      exitReason:"VALIDATION_PASSED"
     }
   }
   
@@ -194,7 +196,6 @@ export async function validateCode(state: AgentState): Promise<AgentState>{
   if(!cleanedCode.includes('export')) errors.push('Missing export statement')
   if(!cleanedCode.includes(state.componentSpec.name)) errors.push('Component name changed or is missing.')
   if(cleanedCode.includes('```')) errors.push('Code was fenced in by ```')
-
   
   return {
     ...state,
@@ -209,7 +210,51 @@ export async function validateCode(state: AgentState): Promise<AgentState>{
     step:"FIX_CODE"
   }
 }
+
+export async function fixCode(state:AgentState): Promise<AgentState> {
+
+  console.log("→ FIX_CODE")
+
+  const attempt = state.validationAttempts
+  if(state.validationHistory.at(-1)?.attempt !== attempt) {
+    throw new Error(`There is a mismatch with the number of attempts and the attempt currently being fixed. State attempt: ${attempt} vs. Validation History attempt ${state.validationHistory.at(-1)?.attempt}`)
+
+  }
+  if(!state.generatedCode) {
+    throw new Error("FIX_CODE called without generatedCode")
+  }
+
+  const prompt = `
+    The following React + TypeScript component failed validation for these reasons:
   
+    ${state.validationHistory[-1].errors.map((e) => "- " + e).join("\n")}
+  
+    Fix the component:
+    - Do not change the component name
+    - Do not change props
+    - Remove fences
+    - Return ONLY code
+  
+    ${normalizeCode(state.generatedCode)}
+  `
+  
+  try {
+    const regeneratedCode = await askCoder(prompt)
+    const normalizedCode = normalizeCode(regeneratedCode)
+    return {
+      ...state,
+      generatedCode: normalizedCode,
+      step:'VALIDATE_CODE'
+    }
+  } catch (err) {
+    return {
+      ...state,
+      errors: [...state.errors, "FIX_CODE execution failed"],
+      step: "REVIEW_CODE",
+      exitReason:"FIX_CODE_FAILED"
+    }
+  }
+}  
 
 export async function reviewCode(
   state: AgentState
@@ -218,6 +263,8 @@ export async function reviewCode(
   console.log(state.generatedCode)
   console.log("\n======================\n")
 
+  console.log("→ REVIEW_CODE", state.exitReason)
+  
   const answer = await ask(
     "Approve code? (y = approve / r = retry code): "
   )
