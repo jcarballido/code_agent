@@ -6,5 +6,6 @@ export type AgentStep =
   | "VALIDATE_CODE"
   | "FIX_CODE"
   | "REVIEW_CODE"
+  | "PRESENT_FOR_REVIEW"
   | "WRITE_FILE"
   | "DONE"

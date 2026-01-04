@@ -7,6 +7,7 @@ import {
   reviewCode,
   writeFile,
   fixCode,
+  presentForReview,
 } from "./stepsHandler"
 
 export async function runStep(
@@ -27,6 +28,9 @@ export async function runStep(
 
     case "FIX_CODE":
       return await fixCode(state)
+    
+    case "PRESENT_FOR_REVIEW":
+      return await presentForReview(state)
 
     case "REVIEW_CODE":
       return await reviewCode(state)

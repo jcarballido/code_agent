@@ -264,21 +264,90 @@ export async function reviewCode(
   console.log("\n======================\n")
 
   console.log("→ REVIEW_CODE", state.exitReason)
-  
-  const answer = await ask(
-    "Approve code? (y = approve / r = retry code): "
-  )
 
-  // 🔁 Retry → rollback to approved spec MCP
-  if (answer.toLowerCase() !== "y") {
-    console.log("↩ Rolling back to approved spec")
-    return restore("SPEC_APPROVED")
+  switch (state.exitReason){
+    case "VALIDATION_PASSED": {
+      return {
+        ...state,
+        codeApproved: true,
+        step: "WRITE_FILE",
+      }
+    }
+    case "FIX_CODE_FAILED":{
+      return presentForReview(state)
+    }
+    case "VALIDATION_RETRIES_EXHAUSTED":{
+      return presentForReview(state)
+    }
+
+    default: {
+      return presentForReview(state)
+    }
+      
   }
+}
 
-  return {
-    ...state,
-    codeApproved: true,
-    step: "WRITE_FILE",
+export async function presentForReview(state: AgentState):Promise<AgentState> {
+  console.log("→ PRESENT_FOR_REVIEW")
+
+  console.log(`Autonomy failed for the following reason: ${state.exitReason}. Please review the current state and choose an option.`)
+  console.log('Component spec at current state:')
+  console.log('---START---')
+  console.log(state.componentSpec)  
+  console.log('---END---')
+  console.log("Agent finished")
+
+
+  switch(state.exitReason){
+    case "FIX_CODE_FAILED":{
+    
+      const response = await ask('Do you want to continue with the current state or regenerate from scratch? [y-continue / r-regenerate from scratch]')
+
+      if(response == 'y'){
+        return {
+          ...state,
+          codeApproved: true,
+          step: "WRITE_FILE",
+        }     
+      }
+      return {
+        ...state,
+        generatedCode: undefined,
+        validationAttempts: 0,
+        validationHistory: [],
+        exitReason: undefined,
+        step: "GENERATE_CODE",
+      }      
+    }
+    case "VALIDATION_RETRIES_EXHAUSTED":{
+      const response = await ask('Do you want to continue with the current state or regenerate from scratch? [y-continue / r-regenerate from scratch]')
+
+      if(response == 'y'){
+        return {
+          ...state,
+          codeApproved: true,
+          step: "WRITE_FILE",
+        }     
+      }
+      return {
+        ...state,
+        generatedCode: undefined,
+        validationAttempts: 0,
+        validationHistory: [],
+        exitReason: undefined,
+        step: "GENERATE_CODE",
+      }      
+    }
+    default:{
+      return {
+        ...state,
+        generatedCode: undefined,
+        validationAttempts: 0,
+        validationHistory: [],
+        exitReason: undefined,
+        step: "GENERATE_CODE",
+      }      
+    }
   }
 }
 
