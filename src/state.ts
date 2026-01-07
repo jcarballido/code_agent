@@ -1,21 +1,9 @@
-export type AgentState = {
-  /** High-level instruction from you */
-  task: string
+import { Annotation } from "@langchain/langgraph";
 
-  /** Absolute or relative path to the project being worked on */
-  projectRoot: string
+export const AgentState = Annotation.Root({
+  task: Annotation<string>(),
+  plan: Annotation<{ steps: string[] | undefined }>(),
+  done: Annotation<boolean>()
+})
 
-  /** Planning output */
-  plan?: {
-    steps: string[]
-  }
-
-  /** Files the agent intends to write or has written */
-  files?: Record<string, string>
-
-  /** Errors discovered during validation */
-  errors?: string[]
-
-  /** Marks successful completion */
-  done?: boolean
-}
+export type AgentStateType = typeof AgentState.State

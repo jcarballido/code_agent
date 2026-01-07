@@ -1,18 +1,13 @@
-import type { AgentState } from "../state.js"
+import type { AgentStateType } from "../state.js"
 
-export async function plan(
-  state: AgentState
-): Promise<AgentState> {
+export function planNode(state: AgentStateType): Partial<AgentStateType> {
   console.log("Planning task...")
 
   return {
-    ...state,
     plan: {
       steps: [
-        "Initialize project structure",
-        "Set up frontend with Tailwind",
-        "Set up backend API",
-        "Validate project"
+        "Analyze Task",
+        "Create Structure",
       ]
     }
   }
