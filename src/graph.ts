@@ -5,6 +5,7 @@ import { reviewSpecNode } from "./nodes/reviewSpecNode.js"
 import { generateCodeNode } from "./nodes/generateCodeNode.js"
 import { validateCodeNode } from "./nodes/validateCodeNode.js"
 import { reviewCodeNode } from "./nodes/reviewCodeNode.js"
+import { writeFileNode } from "./nodes/writeFileNode.js"
 
 
 export const agent = new StateGraph(AgentState)
@@ -13,6 +14,7 @@ export const agent = new StateGraph(AgentState)
   .addNode("generateCodeNode", generateCodeNode)
   .addNode("validateCodeNode", validateCodeNode)
   .addNode("reviewCodeNode", reviewCodeNode)
+  .addNode("writeFileNode", writeFileNode)
   .addEdge("__start__","generateSpecNode")
   .addEdge("generateSpecNode","reviewSpecNode")
   .addConditionalEdges("reviewSpecNode",(AgentState) => {
@@ -34,16 +36,17 @@ export const agent = new StateGraph(AgentState)
     console.log(AgentState.error)
     return "FAILED"
   },{
-    "CODE_REGENERATION_ATTEMTPS_EXCEEDED":"__end__",
+    "CODE_REGENERATION_ATTEMPTS_EXCEEDED":"__end__",
     "SUCCESSFULL":"reviewCodeNode",
     "FAILED":"generateCodeNode"
   })
   .addConditionalEdges("reviewCodeNode",(AgentState) => {
-    if(AgentState.done) return "CODE_APPROVED"
+    if(AgentState.codeApproved) return "CODE_APPROVED"
     return "REJECTED"
   },{
-    "CODE_APPROVED":"__end__",
+    "CODE_APPROVED":"writeFileNode",
     "REJECTED": "generateCodeNode"
   })
+  .addEdge("writeFileNode","__end__")
   .compile()
     

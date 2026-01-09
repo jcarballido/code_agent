@@ -13,6 +13,7 @@ export const AgentState = Annotation.Root({
   specApproved: Annotation<boolean>(),
   generatedCode: Annotation<string>(),
   codeValidated: Annotation<boolean>(),
+  codeApproved: Annotation<boolean>(),
   done: Annotation<boolean>(),
   error:Annotation<string[]>(),
   specRegenerationAttempts: Annotation<number>(),

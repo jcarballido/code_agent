@@ -17,6 +17,6 @@ export async function reviewCodeNode(state:AgentStateType): Promise<Partial<Agen
   }
 
   return {
-    done: true
+    codeApproved: true
   }
 }

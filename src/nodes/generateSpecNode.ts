@@ -45,12 +45,12 @@ export function generateSpecNode(state:AgentStateType):Partial<AgentStateType> {
         }      
       `      
       spec = JSON.parse(response)
-      console.log(spec)
+
     } catch (err) {
       console.log('Error caught in generating spec:')
       console.log(err)
       return {
-        error: "Failed to generate or parse component spec",
+        error: ["Failed to generate or parse component spec"],
       }
     }
   

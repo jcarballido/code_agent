@@ -1,0 +1,56 @@
+import path from "node:path"
+import type { AgentStateType } from "../state.js"
+import fs from "node:fs"
+import { ask } from "../util/ask.js"
+
+export async function writeFileNode(state:AgentStateType): Promise<Partial<AgentStateType>>{
+  console.log("→ WRITE_FILE")
+
+  if (!state.specApproved || !state.codeApproved) {
+    throw new Error("Cannot write file without approved code and spec")
+  }
+
+  // Define filename based on component name
+  const fileName = `${state.spec.name}.tsx`
+  const filePath = path.join(process.cwd(), fileName)
+
+  // Check if file already exists
+  if (fs.existsSync(filePath)) {
+    const existing = fs.readFileSync(filePath, "utf-8")
+
+    if (existing === state.generatedCode) {
+      console.log("File already up-to-date, skipping write.")
+      return { done: true }
+    }
+
+    console.log(`File ${fileName} exists. Showing diff:`)
+    console.log("--- EXISTING ---")
+    console.log(existing)
+    console.log("--- NEW ---")
+    console.log(state.generatedCode)
+
+    // const proceed = await new Promise<string>((resolve) => {
+    //   const rl = require("readline").createInterface({
+    //     input: process.stdin,
+    //     output: process.stdout,
+    //   })
+    //   rl.question("Overwrite file? (y = yes / n = skip): ", (answer:string) => {
+    //     rl.close()
+    //     resolve(answer.trim())
+    //   })
+    // })
+
+    const proceed = await ask('Overwrite file? (y = yes / n = skip): ')
+
+    if (proceed.toLowerCase() !== "y") {
+      console.log("Skipping file write.")
+      return { done: true }
+    }
+  }
+
+  // Write file
+  fs.writeFileSync(filePath, state.generatedCode, "utf-8")
+  console.log(`File written: ${fileName}`)
+
+  return { done:true }
+}
