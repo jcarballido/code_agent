@@ -10,13 +10,12 @@ export async function reviewSpecNode(state: AgentStateType):Promise<Partial<Agen
   console.log('END')
   console.log('------')
 
-  console.log("Attempt Number: ", state.specRegenerationAttempts)
-
   const answer = await ask(
     "Approve spec? (y = approve / r = regenerate): "
   )
 
-  if (answer.toLowerCase() == "y") {
+  if (answer.toLowerCase() !== "y") {
+    console.log("Attempting to regenerate spec...")
     return {
       specRegenerationAttempts: state.specRegenerationAttempts + 1
     }

@@ -4,7 +4,8 @@ async function main() {
   const result = await agent.invoke({
     componentDescription:"Test graph",
     done:false,
-    specRegenerationAttempts:0
+    specRegenerationAttempts:0,
+    codeRegenerationAttempts: 0
   })
 
   console.log("----RESULT----")
