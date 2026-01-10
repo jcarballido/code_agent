@@ -1,6 +1,6 @@
 import { Annotation } from "@langchain/langgraph";
 
-type Spec = {
+export type Spec = {
   name: string,
   props: {name: string,type: string}[] | undefined,
   responsibilities: string[],

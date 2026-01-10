@@ -1,0 +1,40 @@
+import { CODE_MODEL } from "../constants/constants.js"
+import {spawn} from "node:child_process"
+
+export default function askCodeGenerator(prompt: string): Promise<string> {
+  return new Promise((res, rej) => {
+    const proc = spawn('ollama',['run', CODE_MODEL, prompt])
+    proc.stdin.end()
+
+    let buffer = ''
+    proc.stdout.on('data',(data)=>{
+      const chunk = data.toString()
+      // process.stdout.write( chunk)
+      buffer += chunk
+    })
+
+    proc.on('close',(code)=>{
+      if(code == 0) {
+        // console.log('Closing spawned process.')
+        // console.log('Coder model output the following:')
+        // const outputSplit = buffer.split('\n')
+        // let start = 0
+        // let last = outputSplit.length - 1
+      
+        // while(start < last && outputSplit[start]?.trim() == '') start++
+        // while(last > start && outputSplit[last]?.trim() == '') last--
+        
+        // if(outputSplit[start]?.trim().startsWith(`\`\`\``)){
+        //   start++
+        //   if(outputSplit[last]?.trim().startsWith(`\`\`\``)){
+        //     last--
+        //   }
+        // }
+        // const trimmedOutput = outputSplit.slice(start,last+1).join('\n')
+        res(buffer)
+      }
+      else rej(`Error on close with code: ${code}`)
+    })
+    proc.on('error', (err) => rej(err))
+  })
+}
