@@ -10,14 +10,18 @@ export type Spec = {
 export const AgentState = Annotation.Root({
   componentDescription: Annotation<string>(),
   spec: Annotation<Spec>(),
+  specHistory: Annotation<Spec[]>(),
+  specFeedback:Annotation<string | undefined>(),
   specApproved: Annotation<boolean>(),
+  specRegenerationAttempts: Annotation<number>(),
   generatedCode: Annotation<string>(),
+  generatedCodeHistory: Annotation<string[]>(),
+  generateCodeFeedback: Annotation<string>(),
   codeValidated: Annotation<boolean>(),
   codeApproved: Annotation<boolean>(),
-  done: Annotation<boolean>(),
+  codeRegenerationAttempts: Annotation<number>(),
   error:Annotation<string[]>(),
-  specRegenerationAttempts: Annotation<number>(),
-  codeRegenerationAttempts: Annotation<number>()
+  done: Annotation<boolean>(),
 })
 
 export type AgentStateType = typeof AgentState.State

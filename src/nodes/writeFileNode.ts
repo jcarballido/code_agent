@@ -12,7 +12,7 @@ export async function writeFileNode(state:AgentStateType): Promise<Partial<Agent
 
   // Define filename based on component name
   const fileName = `${state.spec.name}.tsx`
-  const filePath = path.join(process.cwd(), fileName)
+  const filePath = path.join(process.cwd(),'generatedFiles', fileName)
 
   // Check if file already exists
   if (fs.existsSync(filePath)) {

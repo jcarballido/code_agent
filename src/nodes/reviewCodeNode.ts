@@ -10,9 +10,18 @@ export async function reviewCodeNode(state:AgentStateType): Promise<Partial<Agen
   console.log('---END---')
 
   const response = await ask("Approve code? (y = approve / r = reject)")
-  if(response !== 'y'){
+
+  if (response.toLowerCase() !== "y") {
+    const feedback = await ask("Is there any feedback?\n")
+    if(feedback){
+      return {
+        codeRegenerationAttempts: state.codeRegenerationAttempts + 1,
+        generateCodeFeedback:feedback,
+        generatedCodeHistory: [...state.generatedCode,state.generatedCode]
+      }
+    }
     return {
-      codeRegenerationAttempts: state.codeRegenerationAttempts + 1
+      specRegenerationAttempts: state.codeRegenerationAttempts + 1
     }
   }
 

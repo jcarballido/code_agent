@@ -9,7 +9,8 @@ async function main() {
     componentDescription,
     done:false,
     specRegenerationAttempts:0,
-    codeRegenerationAttempts: 0
+    codeRegenerationAttempts: 0,
+    specHistory:[]
   })
 
   console.log("----RESULT----")

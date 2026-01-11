@@ -16,6 +16,14 @@ export async function reviewSpecNode(state: AgentStateType):Promise<Partial<Agen
 
   if (answer.toLowerCase() !== "y") {
     console.log("Attempting to regenerate spec...")
+    const feedback = await ask("Is there any feedback?\n")
+    if(feedback){
+      return {
+        specRegenerationAttempts: state.specRegenerationAttempts + 1,
+        specFeedback:feedback,
+        specHistory: [...state.specHistory,state.spec]
+      }
+    }
     return {
       specRegenerationAttempts: state.specRegenerationAttempts + 1
     }
