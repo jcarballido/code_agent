@@ -9,6 +9,7 @@ export type Spec = {
 
 export const AgentState = Annotation.Root({
   componentDescription: Annotation<string>(),
+  projectRoot: Annotation<string>(),
   spec: Annotation<Spec>(),
   specHistory: Annotation<Spec[]>(),
   specFeedback:Annotation<string | undefined>(),
