@@ -1,25 +1,26 @@
 import { SPEC_GENERATOR_PROMPT, SPEC_REVISION_GENERATOR_PROMPT } from "../constants/constants.js";
-import type { AgentStateType } from "../state.js";
+// import type { AgentStateType } from "../state.js";
+import type { State, Update } from "../state.js" 
 import askPlanner from "../util/askSpecGenerator.js";
 
-export async function generateSpecNode(state:AgentStateType):Promise<Partial<AgentStateType>> {  
+export async function generateSpecNode(state:State):Promise<Update> {  
   console.log("→ GENERATE_SPEC")
-  if (state.specApproved) {
+  if (state.specificationApproval) {
     throw new Error("Spec is already approved and cannot be regenerated")
   }
 
-  const isRevision = state.spec !== undefined && state.specFeedback !== undefined
+  const isRevision = state.specification !== undefined && state.specificationFeedback !== undefined
 
   if(isRevision){
-    const prompt = SPEC_REVISION_GENERATOR_PROMPT(state.componentDescription,state.specHistory,state.specFeedback)
-    let spec
+    const prompt = SPEC_REVISION_GENERATOR_PROMPT(state.componentDescription,state.specificationHistory,state.specificationFeedback)
+    let specification
 
     try {
       const response = await askPlanner(prompt)
-      spec = JSON.parse(response)      
+      specification = JSON.parse(response)      
       return {
-        spec,
-        specFeedback:undefined
+        specification,
+        specificationFeedback:undefined
       }
     } catch (err) {
       console.log('Error caught in generating a REVISED spec:')
@@ -31,11 +32,11 @@ export async function generateSpecNode(state:AgentStateType):Promise<Partial<Age
   }else {
     const prompt = SPEC_GENERATOR_PROMPT(state.componentDescription)
   
-    let spec
+    let specification
       
     try {
       const response = await askPlanner(prompt)
-      spec = JSON.parse(response)
+      specification = JSON.parse(response)
   
     } catch (err) {
       console.log('Error caught in generating an INITIAL spec:')
@@ -45,7 +46,7 @@ export async function generateSpecNode(state:AgentStateType):Promise<Partial<Age
       }
     }
     return {
-      spec
+      specification
     }  
   }
 } 

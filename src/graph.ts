@@ -1,14 +1,14 @@
 import { StateGraph } from "@langchain/langgraph"
-import { AgentState } from "./state.js"
+// import { AgentState } from "./state.js"
 import { generateSpecNode } from "./nodes/generateSpecNode.js"
 import { reviewSpecNode } from "./nodes/reviewSpecNode.js"
 import { generateCodeNode } from "./nodes/generateCodeNode.js"
 import { validateCodeNode } from "./nodes/validateCodeNode.js"
 import { reviewCodeNode } from "./nodes/reviewCodeNode.js"
 import { writeFileNode } from "./nodes/writeFileNode.js"
+import { agentState } from "./state.js"
 
-
-export const agent = new StateGraph(AgentState)
+export const agent = new StateGraph(agentState)
   .addNode("generateSpecNode",generateSpecNode)
   .addNode("reviewSpecNode",reviewSpecNode)
   .addNode("generateCodeNode", generateCodeNode)
@@ -17,9 +17,9 @@ export const agent = new StateGraph(AgentState)
   .addNode("writeFileNode", writeFileNode)
   .addEdge("__start__","generateSpecNode")
   .addEdge("generateSpecNode","reviewSpecNode")
-  .addConditionalEdges("reviewSpecNode",(AgentState) => {
-    if(AgentState.specRegenerationAttempts > 2) return "ATTEMPTS_EXCEEDED"
-    if(!AgentState.specApproved) return "CONTINUE"
+  .addConditionalEdges("reviewSpecNode",(agentState) => {
+    if(agentState.specificationRegenerationAttempts > 2) return "ATTEMPTS_EXCEEDED"
+    if(!agentState.specificationApproval) return "CONTINUE"
     return "APPROVED"
   },{
     "ATTEMPTS_EXCEEDED":"__end__",
@@ -27,21 +27,21 @@ export const agent = new StateGraph(AgentState)
     "APPROVED": "generateCodeNode"
   })
   .addEdge("generateCodeNode","validateCodeNode")
-  .addConditionalEdges("validateCodeNode",(AgentState) => {
-    if(AgentState.codeRegenerationAttempts > 2) return "CODE_REGENERATION_ATTEMPTS_EXCEEDED"
-    if(AgentState.codeValidated){
+  .addConditionalEdges("validateCodeNode",(agentState) => {
+    if(agentState.codeRegenerationAttempts > 2) return "CODE_REGENERATION_ATTEMPTS_EXCEEDED"
+    if(agentState.codeValidated){
       return "SUCCESSFULL"
     }
     console.log("Errors found in valiation:")
-    console.log(AgentState.error)
+    console.log(agentState.error)
     return "FAILED"
   },{
     "CODE_REGENERATION_ATTEMPTS_EXCEEDED":"__end__",
     "SUCCESSFULL":"reviewCodeNode",
     "FAILED":"generateCodeNode"
   })
-  .addConditionalEdges("reviewCodeNode",(AgentState) => {
-    if(AgentState.codeApproved) return "CODE_APPROVED"
+  .addConditionalEdges("reviewCodeNode",(agentState) => {
+    if(agentState.codeApproved) return "CODE_APPROVED"
     return "REJECTED"
   },{
     "CODE_APPROVED":"writeFileNode",

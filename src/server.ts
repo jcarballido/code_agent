@@ -15,9 +15,9 @@ async function main() {
       componentDescription,
       projectRoot,
       done:false,
-      specRegenerationAttempts:0,
+      specificationRegenerationAttempts:0,
       codeRegenerationAttempts: 0,
-      specHistory:[]
+      specificationHistory:[]
     })
 
     console.log("---TASK COMPLETE---")

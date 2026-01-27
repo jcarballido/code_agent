@@ -4,16 +4,35 @@ import * as z from 'zod'
 
 const Specification = z.object({
   name: z.string(),
-  props: z.array(z.object({name: z.string(),type: z.string()})),
-  responsibilities: string[],
-  stylingNotes: string[]   
+  props: z.union([z.array(z.object({name: z.string(),type: z.string()})),z.undefined()]),
+  responsibilities: z.array(z.string()),
+  stylingNotes: z.array(z.string())
 })
 
-const State = new StateSchema({
+export const agentState = new StateSchema({
   componentDescription: z.string(),
   projectRoot: z.string(),
-  specification: z.
+  specification: Specification,
+  specificationHistory: z.array(Specification),
+  specificationFeedback: z.union([z.string(),z.undefined()]),
+  specificationApproval: z.boolean(),
+  specificationRegenerationAttempts: z.number(),
+  generatedCode: z.string(),
+  generatedCodeHistory: z.array(z.string()),
+  generatedCodeFeedback: z.string(),
+  codeValidated: z.boolean(),
+  codeApproved: z.boolean(),
+  codeRegenerationAttempts: z.number(),
+  error: z.array(z.string()),
+  done: z.boolean(),
+  exited: z.object({
+    status: z.boolean(),
+    node: z.string()
+  })
 })
+
+export type State = typeof agentState.State
+export type Update = typeof agentState.Update
 
 // export const AgentState = Annotation.Root({
 //   componentDescription: Annotation<string>(),
@@ -36,4 +55,3 @@ const State = new StateSchema({
 //   }>()
 // })
 
-export type AgentStateType = typeof AgentState.State
