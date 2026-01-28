@@ -1,7 +1,8 @@
-import type { AgentStateType } from "../state.js";
+// import type { AgentStateType } from "../state.js";
+import type { State, Update } from "../state.js"
 import { ask } from "../util/ask.js";
 
-export async function collectIntentNode(state: AgentStateType): Promise<Partial<AgentStateType>> {
+export async function collectIntentNode(state: State): Promise<Update>{
   
   const initialPrompt = await ask('What do you want built?\nType "exit" to end session.')
 
@@ -14,8 +15,7 @@ export async function collectIntentNode(state: AgentStateType): Promise<Partial<
     }
   }
 
-  
   return{
-
+    initialIntent: initialPrompt
   }
 }

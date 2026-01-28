@@ -10,7 +10,7 @@ const Specification = z.object({
 })
 
 export const agentState = new StateSchema({
-  componentDescription: z.string(),
+  initialIntent: z.string(),
   projectRoot: z.string(),
   specification: Specification,
   specificationHistory: z.array(Specification),

@@ -7,15 +7,27 @@ import { validateCodeNode } from "./nodes/validateCodeNode.js"
 import { reviewCodeNode } from "./nodes/reviewCodeNode.js"
 import { writeFileNode } from "./nodes/writeFileNode.js"
 import { agentState } from "./state.js"
+import { collectIntentNode } from "./nodes/collectIntentNode.js"
 
 export const agent = new StateGraph(agentState)
+  .addNode("collectIntentNode", collectIntentNode)
   .addNode("generateSpecNode",generateSpecNode)
   .addNode("reviewSpecNode",reviewSpecNode)
   .addNode("generateCodeNode", generateCodeNode)
   .addNode("validateCodeNode", validateCodeNode)
   .addNode("reviewCodeNode", reviewCodeNode)
   .addNode("writeFileNode", writeFileNode)
-  .addEdge("__start__","generateSpecNode")
+  .addEdge("__start__","collectIntentNode")
+  .addConditionalEdges("collectIntentNode", (agentState) =>{
+    if(agentState.exited.status === true) {
+      console.log("Process ended at COLLECT INTENT NODE")
+      return "EXITED"
+    }
+    return "CONTINUE"
+  },{
+    "EXITED": "__end__",
+    "CONTINUE": "generateSpecNode"
+  })
   .addEdge("generateSpecNode","reviewSpecNode")
   .addConditionalEdges("reviewSpecNode",(agentState) => {
     if(agentState.specificationRegenerationAttempts > 2) return "ATTEMPTS_EXCEEDED"
