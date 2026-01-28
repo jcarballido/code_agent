@@ -8,9 +8,12 @@ import { reviewCodeNode } from "./nodes/reviewCodeNode.js"
 import { writeFileNode } from "./nodes/writeFileNode.js"
 import { agentState } from "./state.js"
 import { collectIntentNode } from "./nodes/collectIntentNode.js"
+import { processInitialIntentNode } from "../src/nodes/processInitialIntentNode.js"
 
 export const agent = new StateGraph(agentState)
   .addNode("collectIntentNode", collectIntentNode)
+  .addNode("processInitialIntentNode", processInitialIntentNode)
+  .addNode("refineIntentNode", refineIntentNode)
   .addNode("generateSpecNode",generateSpecNode)
   .addNode("reviewSpecNode",reviewSpecNode)
   .addNode("generateCodeNode", generateCodeNode)
@@ -26,7 +29,14 @@ export const agent = new StateGraph(agentState)
     return "CONTINUE"
   },{
     "EXITED": "__end__",
-    "CONTINUE": "generateSpecNode"
+    "CONTINUE": "processInitialIntentNode"
+  })
+  .addConditionalEdges("processInitialIntentNode", (agentState) => {
+    if(agentState.clarifyingQuestions) return "CLARIFY_INTENT"
+    return "GENERATE_SPECIFICATION"
+  },{
+    "CLARIFY_INTENT":"refineIntentNode",
+    "GENERATE_SPECIFICATION":"generateSpecNode"
   })
   .addEdge("generateSpecNode","reviewSpecNode")
   .addConditionalEdges("reviewSpecNode",(agentState) => {

@@ -11,8 +11,9 @@ const Specification = z.object({
 
 export const agentState = new StateSchema({
   initialIntent: z.string(),
+  clarifyingQuestions:z.union([z.array(z.string()),z.undefined()]),
   projectRoot: z.string(),
-  specification: Specification,
+  specification: z.union([Specification, z.undefined()]),
   specificationHistory: z.array(Specification),
   specificationFeedback: z.union([z.string(),z.undefined()]),
   specificationApproval: z.boolean(),

@@ -1,4 +1,5 @@
-import type { AgentStateType } from "../state.js"
+// import type { State } from "../state.js"
+import type { State } from "../state.js"
 
 const CODE_MODEL = 'qwen2.5-coder:7b'
 const PROPOSAL_MODEL = 'llama3.1'
@@ -17,7 +18,6 @@ const SPEC_GENERATOR_PROMPT = (componentDescription: string) => `
     "responsibilities": ["..."],
     "stylingNotes": ["..."]
   }
-
   RULES:
 
   1. No extra commentary, code, or explanations are allowed outside these sections.
@@ -26,10 +26,14 @@ const SPEC_GENERATOR_PROMPT = (componentDescription: string) => `
 
   3. Your output is meant to be **readable by both humans and the agent script**. An agent will parse the sections to validate and execute the plan.
 
-  4. If the user request is ambiguous or under specified, you MUST ask clarifying questions instead of producing a proposal.
+  4. If the user request is ambiguous or under specified, you MUST ask clarifying questions instead of producing a proposal. Return ONLY valid JSON with this shape:
+  {
+    clarifyingQuestions:["..."]
+  }
+
 `
 
-const SPEC_REVISION_GENERATOR_PROMPT = (description:AgentStateType["componentDescription"], previousSpec:AgentStateType["specHistory"], feedback:AgentStateType["specFeedback"]) => `
+const SPEC_REVISION_GENERATOR_PROMPT = (description:State["componentDescription"], previousSpec:State["specHistory"], feedback:State["specFeedback"]) => `
   Original user description:
   ${description}
 
@@ -63,7 +67,7 @@ const SPEC_REVISION_GENERATOR_PROMPT = (description:AgentStateType["componentDes
   7. Your output is meant to be **readable by both humans and the agent script**. An agent will parse the sections to validate and execute the plan.
 `
 
-const CODE_GENERATOR_PROMPT = (spec: AgentStateType["spec"]) => `  
+const CODE_GENERATOR_PROMPT = (spec: State["spec"]) => `  
   Using the following approved component spec:
   ${JSON.stringify(spec, null, 2)}
 
@@ -97,7 +101,7 @@ const CODE_GENERATOR_PROMPT = (spec: AgentStateType["spec"]) => `
   - Return ONLY code
 `
 
-const CODE_REGENERATION_PROMPT = (spec: AgentStateType["spec"],generatedCode: AgentStateType["generatedCode"], feedback: AgentStateType["generateCodeFeedback"]) => `
+const CODE_REGENERATION_PROMPT = (spec: State["spec"],generatedCode: State["generatedCode"], feedback: State["generateCodeFeedback"]) => `
   You are modifying an existing React + TypeScript component.
 
   Approved spec (DO NOT VIOLATE):
