@@ -3,12 +3,12 @@ import type { State } from "../state.js"
 
 const CODE_MODEL = 'qwen2.5-coder:7b'
 const PROPOSAL_MODEL = 'llama3.1'
-const SPEC_GENERATOR_PROMPT = (componentDescription: string) => `
+const SPEC_GENERATOR_PROMPT = (initialIntent: string) => `
   You are a senior frontend engineer generating production-quality React components.
 
   Given the following component description:
 
-  "${componentDescription}"
+  "${initialIntent}"
 
   Return ONLY valid JSON with this shape:
 
@@ -30,6 +30,34 @@ const SPEC_GENERATOR_PROMPT = (componentDescription: string) => `
   {
     clarifyingQuestions:["..."]
   }
+
+`
+const SPEC_REFINING_PROMPT = (componentDescription: string, clarifyingQandA: {question: string, answer:""}[]) => `
+  You are a senior frontend engineer generating production-quality React components.
+
+  Given the following component description:
+
+  "${componentDescription}"
+
+  Given the following clarifyng question and answers:
+
+  ${clarifyingQandA.join('\n')}
+
+  Return ONLY valid JSON with this shape:
+
+  {
+    "name": "ComponentName",
+    "props": [{ "name": "propName", "type": "string" }],
+    "responsibilities": ["..."],
+    "stylingNotes": ["..."]
+  }
+  RULES:
+
+  1. No extra commentary, code, or explanations are allowed outside these sections.
+
+  2. Always use plain text. Do not include markdown, backticks, or other formatting.
+
+  3. Your output is meant to be **readable by both humans and the agent script**. An agent will parse the sections to validate and execute the plan.
 
 `
 
@@ -150,6 +178,7 @@ export {
   PROPOSAL_MODEL,
   SPEC_GENERATOR_PROMPT,
   SPEC_REVISION_GENERATOR_PROMPT,
+  SPEC_REFINING_PROMPT,
   CODE_GENERATOR_PROMPT,
   CODE_REGENERATION_PROMPT
 }
