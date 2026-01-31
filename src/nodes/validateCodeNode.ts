@@ -1,4 +1,4 @@
-import type { AgentStateType } from '../state.js'
+import type { State, Update } from '../state.js'
 
 function isValid(generatedCode:string): boolean{
   if(!generatedCode.includes('export')) return false
@@ -6,7 +6,7 @@ function isValid(generatedCode:string): boolean{
   return true
 }
 
-export async function validateCodeNode(state: AgentStateType): Promise<Partial<AgentStateType>>{
+export async function validateCodeNode(state: State): Promise<Update>{
     console.log('→ VALIDATE_CODE')
 
     const code = state.generatedCode

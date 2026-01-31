@@ -5,6 +5,8 @@ import { ask } from "../util/ask.js"
 export async function reviewSpecNode(state: State):Promise<Update> {
   console.log("→ REVEIW_SPEC")
 
+  if(!state.specification) throw new Error("ReviewSpecNode: Specification is undefined. ")
+
   console.log('---Component Spec from LLM---')
   console.log('START')
   console.log(state.specification)
@@ -16,22 +18,24 @@ export async function reviewSpecNode(state: State):Promise<Update> {
   )
 
   if (answer.toLowerCase() !== "y") {
-    console.log("Attempting to regenerate spec...")
     const feedback = await ask("Is there any feedback?\n")
     if(feedback){
       return {
         specificationRegenerationAttempts: state.specificationRegenerationAttempts + 1,
         specificationFeedback:feedback,
-        specificationHistory: [...state.specificationHistory,state.specification]
+        specificationHistory: state.specification
       }
     }
     return {
-      specRegenerationAttempts: state.specRegenerationAttempts + 1
+      specificationRegenerationAttempts: state.specificationRegenerationAttempts + 1,
+      specificationFeedback: undefined
     }
   }
 
   return {
-    specApproved: true
+    specificationApproval: true,
+    specificationRegenerationAttempts: 0,
+    specificationFeedback: undefined
   }
   // checkpoint("SPEC_APPROVED", nextState)
 }

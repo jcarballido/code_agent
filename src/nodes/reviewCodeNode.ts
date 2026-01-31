@@ -1,7 +1,8 @@
-import type { AgentStateType } from "../state.js"
+// import type { AgentStateType } from "../state.js"
+import type { State, Update } from "../state.js"
 import { ask } from "../util/ask.js"
 
-export async function reviewCodeNode(state:AgentStateType): Promise<Partial<AgentStateType>>{
+export async function reviewCodeNode(state:State): Promise<Update>{
   console.log("→ PRESENT_FOR_REVIEW")
 
   console.log('Review the generated code before writing file:')
@@ -16,12 +17,12 @@ export async function reviewCodeNode(state:AgentStateType): Promise<Partial<Agen
     if(feedback){
       return {
         codeRegenerationAttempts: state.codeRegenerationAttempts + 1,
-        generateCodeFeedback:feedback,
+        generatedCodeFeedback:feedback,
         generatedCodeHistory: [...state.generatedCode,state.generatedCode]
       }
     }
     return {
-      specRegenerationAttempts: state.codeRegenerationAttempts + 1
+      codeRegenerationAttempts: state.codeRegenerationAttempts + 1
     }
   }
 

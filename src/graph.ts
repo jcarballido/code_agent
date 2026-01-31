@@ -49,11 +49,11 @@ export const agent = new StateGraph(agentState)
   // .addEdge("generateSpecNode","reviewSpecNode")
   .addConditionalEdges("reviewSpecNode",(agentState) => {
     if(agentState.specificationRegenerationAttempts > 2) return "ATTEMPTS_EXCEEDED"
-    if(!agentState.specificationApproval) return "CONTINUE"
+    if(agentState.specificationFeedback || !agentState.specificationApproval) return "REGENERATE"
     return "APPROVED"
   },{
     "ATTEMPTS_EXCEEDED":"__end__",
-    "CONTINUE":"generateSpecNode",
+    "REGENERATE":"generateSpecNode",
     "APPROVED": "generateCodeNode"
   })
   .addEdge("generateCodeNode","validateCodeNode")
@@ -64,6 +64,7 @@ export const agent = new StateGraph(agentState)
     }
     console.log("Errors found in valiation:")
     console.log(agentState.error)
+    console.log("Attempting to regenerate code...")
     return "FAILED"
   },{
     "CODE_REGENERATION_ATTEMPTS_EXCEEDED":"__end__",

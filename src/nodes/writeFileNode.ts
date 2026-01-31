@@ -1,17 +1,17 @@
 import path from "node:path"
-import type { AgentStateType } from "../state.js"
+import type { State, Update } from "../state.js"
 import fs from "node:fs"
 import { ask } from "../util/ask.js"
 
-export async function writeFileNode(state:AgentStateType): Promise<Partial<AgentStateType>>{
+export async function writeFileNode(state:State): Promise<Update>{
   console.log("→ WRITE_FILE")
 
-  if (!state.specApproved || !state.codeApproved) {
+  if (!state.specificationApproval || !state.codeApproved || !state.specification) {
     throw new Error("Cannot write file without approved code and spec")
   }
 
   // Define filename based on component name
-  const fileName = `${state.spec.name}.tsx`
+  const fileName = `${state.specification.name}.tsx`
   const filePath = path.join(state.projectRoot, fileName)
 
   if(!filePath.startsWith(state.projectRoot)){

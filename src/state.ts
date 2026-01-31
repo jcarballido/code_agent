@@ -2,24 +2,24 @@
 import { ReducedValue, StateSchema } from "@langchain/langgraph";
 import * as z from 'zod'
 
-const Specification = z.object({
+const SpecificationSchema = z.object({
   name: z.string(),
-  props: z.union([z.array(z.object({name: z.string(),type: z.string()})),z.undefined()]),
+  props: z.array(z.object({name: z.string(),type: z.string()})).optional(),
   responsibilities: z.array(z.string()),
   stylingNotes: z.array(z.string())
 })
 
-type Specification = z.infer<typeof Specification>
+type Specification = z.infer<typeof SpecificationSchema>
 
 export const agentState = new StateSchema({
   initialIntent: z.string(),
   clarifyingQuestions:z.union([z.array(z.string()),z.undefined()]),
   projectRoot: z.string(),
-  specification: z.union([Specification, z.undefined()]),
+  specification: SpecificationSchema.optional(),
   specificationHistory: new ReducedValue(
-    z.array(Specification),
+    z.array(SpecificationSchema),
     {
-      inputSchema: Specification,
+      inputSchema: SpecificationSchema,
       reducer: (arr: Specification[], newVal: Specification) => [...arr, newVal]
     }
   ),
