@@ -21,7 +21,7 @@ export async function generateCodeNode(state: State): Promise<Update> {
   const isRevision = state.generatedCode !== undefined && state.generatedCodeFeedback !== undefined
   let code: string
   if(isRevision){
-    const prompt = CODE_REGENERATION_PROMPT(spec,state.generatedCode,state.generatedCodeFeedback)
+    const prompt = CODE_REGENERATION_PROMPT(JSON.stringify(state.specification),state.generatedCode,state.generatedCodeFeedback)
 
     try {
       code = await askCodeGenerator(prompt)
@@ -33,7 +33,7 @@ export async function generateCodeNode(state: State): Promise<Update> {
       }
     }    
   }else{
-    const prompt = CODE_GENERATOR_PROMPT(spec)
+    const prompt = CODE_GENERATOR_PROMPT(JSON.stringify(spec))
     
     try {
       code = await askCodeGenerator(prompt)

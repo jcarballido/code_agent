@@ -8,7 +8,7 @@ import { reviewCodeNode } from "./nodes/reviewCodeNode.js"
 import { writeFileNode } from "./nodes/writeFileNode.js"
 import { agentState } from "./state.js"
 import { collectIntentNode } from "./nodes/collectIntentNode.js"
-import { processInitialIntentNode } from "../src/nodes/processInitialIntentNode.js"
+import { processInitialIntentNode } from "./nodes/processInitialIntentNode.js"
 import { refineIntentNode } from "./nodes/refineIntentNode.js"
 
 export const agent = new StateGraph(agentState)

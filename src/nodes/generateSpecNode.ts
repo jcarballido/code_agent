@@ -12,7 +12,7 @@ export async function generateSpecNode(state:State):Promise<Update> {
   const isRevision = state.specification !== undefined && state.specificationFeedback !== undefined
 
   if(isRevision){
-    const prompt = SPEC_REVISION_GENERATOR_PROMPT(state.componentDescription,state.specificationHistory,state.specificationFeedback)
+    const prompt = SPEC_REVISION_GENERATOR_PROMPT(state.initialIntent,JSON.stringify(state.specificationHistory),JSON.stringify(state.specificationFeedback))
     let specification
 
     try {
@@ -30,7 +30,7 @@ export async function generateSpecNode(state:State):Promise<Update> {
       }      
     }
   }else {
-    const prompt = SPEC_GENERATOR_PROMPT(state.componentDescription)
+    const prompt = SPEC_GENERATOR_PROMPT(state.initialIntent)
   
     let specification
       

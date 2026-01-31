@@ -17,7 +17,7 @@ export const agentState = new StateSchema({
   projectRoot: z.string(),
   specification: SpecificationSchema.optional(),
   specificationHistory: new ReducedValue(
-    z.array(SpecificationSchema),
+    z.array(SpecificationSchema).default([]),
     {
       inputSchema: SpecificationSchema,
       reducer: (arr: Specification[], newVal: Specification) => [...arr, newVal]
@@ -31,9 +31,9 @@ export const agentState = new StateSchema({
   generatedCodeFeedback: z.string(),
   codeValidated: z.boolean(),
   codeApproved: z.boolean(),
-  codeRegenerationAttempts: z.number(),
+  codeRegenerationAttempts: z.number().default(0),
   error: z.array(z.string()),
-  done: z.boolean(),
+  done: z.boolean().default(false),
   exited: z.object({
     status: z.boolean(),
     node: z.string()

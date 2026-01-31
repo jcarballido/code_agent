@@ -61,7 +61,7 @@ const SPEC_REFINING_PROMPT = (componentDescription: string, clarifyingQandA: {qu
 
 `
 
-const SPEC_REVISION_GENERATOR_PROMPT = (description:State["componentDescription"], previousSpec:State["specHistory"], feedback:State["specFeedback"]) => `
+const SPEC_REVISION_GENERATOR_PROMPT = (description:string, previousSpec:string, feedback:string) => `
   Original user description:
   ${description}
 
@@ -95,7 +95,7 @@ const SPEC_REVISION_GENERATOR_PROMPT = (description:State["componentDescription"
   7. Your output is meant to be **readable by both humans and the agent script**. An agent will parse the sections to validate and execute the plan.
 `
 
-const CODE_GENERATOR_PROMPT = (spec: State["spec"]) => `  
+const CODE_GENERATOR_PROMPT = (spec: string) => `  
   Using the following approved component spec:
   ${JSON.stringify(spec, null, 2)}
 
@@ -129,7 +129,7 @@ const CODE_GENERATOR_PROMPT = (spec: State["spec"]) => `
   - Return ONLY code
 `
 
-const CODE_REGENERATION_PROMPT = (spec: State["spec"],generatedCode: State["generatedCode"], feedback: State["generateCodeFeedback"]) => `
+const CODE_REGENERATION_PROMPT = (spec: string,generatedCode: State["generatedCode"], feedback: string) => `
   You are modifying an existing React + TypeScript component.
 
   Approved spec (DO NOT VIOLATE):
