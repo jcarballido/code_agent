@@ -1,5 +1,5 @@
 // import { Annotation } from "@langchain/langgraph";
-import { StateSchema } from "@langchain/langgraph";
+import { ReducedValue, StateSchema } from "@langchain/langgraph";
 import * as z from 'zod'
 
 const Specification = z.object({
@@ -9,15 +9,23 @@ const Specification = z.object({
   stylingNotes: z.array(z.string())
 })
 
+type Specification = z.infer<typeof Specification>
+
 export const agentState = new StateSchema({
   initialIntent: z.string(),
   clarifyingQuestions:z.union([z.array(z.string()),z.undefined()]),
   projectRoot: z.string(),
   specification: z.union([Specification, z.undefined()]),
-  specificationHistory: z.array(Specification),
+  specificationHistory: new ReducedValue(
+    z.array(Specification),
+    {
+      inputSchema: Specification,
+      reducer: (arr: Specification[], newVal: Specification) => [...arr, newVal]
+    }
+  ),
   specificationFeedback: z.union([z.string(),z.undefined()]),
   specificationApproval: z.boolean(),
-  specificationRegenerationAttempts: z.number(),
+  specificationRegenerationAttempts: z.number().default(0),
   generatedCode: z.string(),
   generatedCodeHistory: z.array(z.string()),
   generatedCodeFeedback: z.string(),

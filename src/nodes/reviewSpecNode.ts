@@ -1,12 +1,13 @@
-import type { AgentStateType } from "../state.js"
+// import type { AgentStateType } from "../state.js"
+import type { State, Update } from "../state.js"
 import { ask } from "../util/ask.js"
 
-export async function reviewSpecNode(state: AgentStateType):Promise<Partial<AgentStateType>> {
+export async function reviewSpecNode(state: State):Promise<Update> {
   console.log("→ REVEIW_SPEC")
 
   console.log('---Component Spec from LLM---')
   console.log('START')
-  console.log(state.spec)
+  console.log(state.specification)
   console.log('END')
   console.log('------')
 
@@ -19,9 +20,9 @@ export async function reviewSpecNode(state: AgentStateType):Promise<Partial<Agen
     const feedback = await ask("Is there any feedback?\n")
     if(feedback){
       return {
-        specRegenerationAttempts: state.specRegenerationAttempts + 1,
-        specFeedback:feedback,
-        specHistory: [...state.specHistory,state.spec]
+        specificationRegenerationAttempts: state.specificationRegenerationAttempts + 1,
+        specificationFeedback:feedback,
+        specificationHistory: [...state.specificationHistory,state.specification]
       }
     }
     return {

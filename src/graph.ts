@@ -46,7 +46,7 @@ export const agent = new StateGraph(agentState)
     "SPEC_REFINED":"reviewSpecNode",
     "ERROR":"__end__"
   })
-  .addEdge("generateSpecNode","reviewSpecNode")
+  // .addEdge("generateSpecNode","reviewSpecNode")
   .addConditionalEdges("reviewSpecNode",(agentState) => {
     if(agentState.specificationRegenerationAttempts > 2) return "ATTEMPTS_EXCEEDED"
     if(!agentState.specificationApproval) return "CONTINUE"
