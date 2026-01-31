@@ -32,7 +32,7 @@ const SPEC_GENERATOR_PROMPT = (initialIntent: string) => `
   }
 
 `
-const SPEC_REFINING_PROMPT = (componentDescription: string, clarifyingQandA: {question: string, answer:""}[]) => `
+const SPEC_REFINING_PROMPT = (componentDescription: string, clarifyingQandA: {question: string, response:string}[]) => `
   You are a senior frontend engineer generating production-quality React components.
 
   Given the following component description:

@@ -9,6 +9,7 @@ import { writeFileNode } from "./nodes/writeFileNode.js"
 import { agentState } from "./state.js"
 import { collectIntentNode } from "./nodes/collectIntentNode.js"
 import { processInitialIntentNode } from "../src/nodes/processInitialIntentNode.js"
+import { refineIntentNode } from "./nodes/refineIntentNode.js"
 
 export const agent = new StateGraph(agentState)
   .addNode("collectIntentNode", collectIntentNode)
@@ -33,10 +34,17 @@ export const agent = new StateGraph(agentState)
   })
   .addConditionalEdges("processInitialIntentNode", (agentState) => {
     if(agentState.clarifyingQuestions) return "CLARIFY_INTENT"
-    return "GENERATE_SPECIFICATION"
+    return "REVIEW_SPECIFICATION"
   },{
     "CLARIFY_INTENT":"refineIntentNode",
-    "GENERATE_SPECIFICATION":"generateSpecNode"
+    "REVIEW_SPECIFICATION":"reviewSpecNode"
+  })
+  .addConditionalEdges("refineIntentNode", (agentState) => {
+    if(agentState.specification) return "SPEC_REFINED"
+    return "ERROR"
+  },{
+    "SPEC_REFINED":"reviewSpecNode",
+    "ERROR":"__end__"
   })
   .addEdge("generateSpecNode","reviewSpecNode")
   .addConditionalEdges("reviewSpecNode",(agentState) => {
