@@ -23,7 +23,7 @@ export const agent = new StateGraph(agentState)
   .addNode("writeFileNode", writeFileNode)
   .addEdge("__start__","collectIntentNode")
   .addConditionalEdges("collectIntentNode", (agentState) =>{
-    if(agentState.exited.status === true) {
+    if(agentState.exited?.status === true) {
       console.log("Process ended at COLLECT INTENT NODE")
       return "EXITED"
     }
@@ -41,6 +41,7 @@ export const agent = new StateGraph(agentState)
   })
   .addConditionalEdges("refineIntentNode", (agentState) => {
     if(agentState.specification) return "SPEC_REFINED"
+    console.log("SPECIFICATION COULD NOT BE GENERATED. EXITING.")
     return "ERROR"
   },{
     "SPEC_REFINED":"reviewSpecNode",
@@ -48,7 +49,10 @@ export const agent = new StateGraph(agentState)
   })
   // .addEdge("generateSpecNode","reviewSpecNode")
   .addConditionalEdges("reviewSpecNode",(agentState) => {
-    if(agentState.specificationRegenerationAttempts > 2) return "ATTEMPTS_EXCEEDED"
+    if(agentState.specificationRegenerationAttempts > 2){
+      console.log("SPECIFICATION REGENERATION ATTEMPTS EXCEEDED.EXITING.")
+      return "ATTEMPTS_EXCEEDED"
+    }  
     if(agentState.specificationFeedback || !agentState.specificationApproval) return "REGENERATE"
     return "APPROVED"
   },{
@@ -58,7 +62,10 @@ export const agent = new StateGraph(agentState)
   })
   .addEdge("generateCodeNode","validateCodeNode")
   .addConditionalEdges("validateCodeNode",(agentState) => {
-    if(agentState.codeRegenerationAttempts > 2) return "CODE_REGENERATION_ATTEMPTS_EXCEEDED"
+    if(agentState.codeRegenerationAttempts > 2){
+      console.log("CODE REGENERATION ATTEMPTS EXCEEDED.EXITING.")
+      return "CODE_REGENERATION_ATTEMPTS_EXCEEDED"
+    } 
     if(agentState.codeValidated){
       return "SUCCESSFULL"
     }
@@ -78,6 +85,6 @@ export const agent = new StateGraph(agentState)
     "CODE_APPROVED":"writeFileNode",
     "REJECTED": "generateCodeNode"
   })
-  .addEdge("writeFileNode","__end__")
+  .addEdge("writeFileNode","collectIntentNode")
   .compile()
     
